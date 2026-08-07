@@ -1,8 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Этап 1: статические страницы + клиентская интерактивность, бэкенд позже
-  output: "standalone",
+  // Этап 1: обычный серверный запуск; standalone-сборка понадобится при деплое
 };
 
 export default nextConfig;

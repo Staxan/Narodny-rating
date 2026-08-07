@@ -7,20 +7,39 @@ import DeputyRow from "@/components/DeputyRow";
 
 type LevelFilter = "all" | DeputyLevel;
 type SortKey = "rating" | "votes" | "name";
+type RatingFilter = "all" | "high" | "mid" | "low";
 
 interface DeputyListClientProps {
   deputies: Deputy[];
+  /** Начальные значения фильтров — из URL-параметров главной страницы */
+  initial?: {
+    level?: string;
+    region?: string;
+    faction?: string;
+    q?: string;
+    rating?: string;
+  };
 }
 
 /**
  * Список депутатов с фильтрами и поиском.
  * Этап 1: фильтрация по мок-данным на клиенте; позже — параметры запросов к API.
+ * URL-параметры (?level=&region=&faction=&q=&rating=) применяются при открытии.
  */
-export default function DeputyListClient({ deputies }: DeputyListClientProps) {
-  const [level, setLevel] = useState<LevelFilter>("all");
-  const [region, setRegion] = useState<string>("all");
-  const [faction, setFaction] = useState<string>("all");
-  const [query, setQuery] = useState("");
+export default function DeputyListClient({ deputies, initial = {} }: DeputyListClientProps) {
+  const [level, setLevel] = useState<LevelFilter>(
+    initial.level === "federal" || initial.level === "regional" || initial.level === "municipal"
+      ? initial.level
+      : "all"
+  );
+  const [region, setRegion] = useState<string>(initial.region ?? "all");
+  const [faction, setFaction] = useState<string>(initial.faction ?? "all");
+  const [query, setQuery] = useState(initial.q ?? "");
+  const [ratingFilter, setRatingFilter] = useState<RatingFilter>(
+    initial.rating === "high" || initial.rating === "mid" || initial.rating === "low"
+      ? initial.rating
+      : "all"
+  );
   const [sort, setSort] = useState<SortKey>("rating");
 
   const regions = useMemo(
@@ -37,6 +56,10 @@ export default function DeputyListClient({ deputies }: DeputyListClientProps) {
       if (level !== "all" && d.level !== level) return false;
       if (region !== "all" && d.region !== region) return false;
       if (faction !== "all" && d.faction !== faction) return false;
+      // Фильтр по диапазону рейтинга (пороги из ТЗ)
+      if (ratingFilter === "high" && d.overallScore < 70) return false;
+      if (ratingFilter === "mid" && (d.overallScore < 40 || d.overallScore >= 70)) return false;
+      if (ratingFilter === "low" && d.overallScore >= 40) return false;
       if (query.trim()) {
         const q = query.trim().toLowerCase();
         const hay = `${d.fullName} ${d.position} ${d.district ?? ""}`.toLowerCase();
@@ -56,7 +79,7 @@ export default function DeputyListClient({ deputies }: DeputyListClientProps) {
         break;
     }
     return res;
-  }, [deputies, level, region, faction, query, sort]);
+  }, [deputies, level, region, faction, ratingFilter, query, sort]);
 
   const levelTabs: { key: LevelFilter; label: string }[] = [
     { key: "all", label: "Все уровни" },
@@ -64,6 +87,14 @@ export default function DeputyListClient({ deputies }: DeputyListClientProps) {
     { key: "regional", label: LEVEL_SHORT.regional },
     { key: "municipal", label: LEVEL_SHORT.municipal },
   ];
+
+  const selectStyle: React.CSSProperties = {
+    color: "var(--text)",
+    background: "var(--bg)",
+    fontFamily: "inherit",
+    cursor: "pointer",
+    border: "1px solid var(--border)",
+  };
 
   return (
     <div className="wrap">
@@ -95,7 +126,7 @@ export default function DeputyListClient({ deputies }: DeputyListClientProps) {
         <div className="chips" style={{ marginTop: 0 }}>
           <select
             className="chip"
-            style={{ color: "var(--text)", background: "var(--bg)", fontFamily: "inherit", cursor: "pointer" }}
+            style={selectStyle}
             value={region}
             onChange={(e) => setRegion(e.target.value)}
           >
@@ -106,7 +137,7 @@ export default function DeputyListClient({ deputies }: DeputyListClientProps) {
           </select>
           <select
             className="chip"
-            style={{ color: "var(--text)", background: "var(--bg)", fontFamily: "inherit", cursor: "pointer" }}
+            style={selectStyle}
             value={faction}
             onChange={(e) => setFaction(e.target.value)}
           >
@@ -117,7 +148,18 @@ export default function DeputyListClient({ deputies }: DeputyListClientProps) {
           </select>
           <select
             className="chip"
-            style={{ color: "var(--text)", background: "var(--bg)", fontFamily: "inherit", cursor: "pointer" }}
+            style={selectStyle}
+            value={ratingFilter}
+            onChange={(e) => setRatingFilter(e.target.value as RatingFilter)}
+          >
+            <option value="all">Рейтинг: Любой</option>
+            <option value="high">Высокий (70+)</option>
+            <option value="mid">Средний (40–69)</option>
+            <option value="low">Низкий (ниже 40)</option>
+          </select>
+          <select
+            className="chip"
+            style={selectStyle}
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
           >

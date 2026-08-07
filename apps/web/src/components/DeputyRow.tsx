@@ -1,17 +1,13 @@
 import Link from "next/link";
 import type { Deputy } from "@/lib/types";
 import RatingBadge from "./RatingBadge";
+import Avatar from "./Avatar";
 
 /** Строка депутата в списках (топ на главной, страница списка). */
 export default function DeputyRow({ d }: { d: Deputy }) {
   return (
     <Link href={`/deputies/${d.slug}`} className="dep-row">
-      <div
-        className="ava"
-        style={{ background: `linear-gradient(135deg, ${d.avatarColor[0]}, ${d.avatarColor[1]})` }}
-      >
-        {d.initials}
-      </div>
+      <Avatar d={d} />
       <div className="dep-info">
         <div className="dep-name">{d.fullName}</div>
         <div className="dep-pos">

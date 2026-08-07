@@ -66,7 +66,8 @@ export interface Deputy {
   slug: string;
   fullName: string;
   initials: string;
-  avatarColor: [string, string]; // градиент аватара
+  avatarColor: [string, string]; // градиент аватара (фолбэк, если фото недоступно)
+  photoUrl?: string; // URL фотографии (в проде — из официальных источников)
   position: string;
   level: DeputyLevel;
   region: string;
@@ -106,11 +107,11 @@ export function scoreColor(score: number): "good" | "mid" | "bad" {
   return "bad";
 }
 
-/** Цвет текста/бара по баллу */
+/** Цвет текста/бара по баллу (HEX — чтобы корректно работать в градиентах с альфа-суффиксом) */
 export function scoreCssColor(score: number): string {
-  if (score >= 70) return "var(--good)";
-  if (score >= 40) return "var(--mid)";
-  return "var(--bad)";
+  if (score >= 70) return "#10B981";
+  if (score >= 40) return "#F59E0B";
+  return "#EF4444";
 }
 
 /** Стрелка динамики по баллу */

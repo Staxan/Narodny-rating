@@ -5,6 +5,8 @@ import SiteFooter from "@/components/SiteFooter";
 import ScoreRing from "@/components/ScoreRing";
 import RatingBars from "@/components/RatingBars";
 import RatingChart from "@/components/RatingChart";
+import Avatar from "@/components/Avatar";
+import VoteModal from "@/components/VoteModal";
 import { getDeputyBySlug } from "@/lib/mock-data";
 import { LEVEL_NAMES } from "@/lib/types";
 
@@ -64,7 +66,7 @@ export default async function DeputyPage({ params }: Props) {
 
         {/* Шапка профиля */}
         <div className="card profile anim d2">
-          <div className="ava-big">{d.initials}</div>
+          <Avatar d={d} big />
           <div className="p-info">
             <div className="p-name">{d.fullName}</div>
             <div className="p-pos">{d.position}</div>
@@ -84,9 +86,7 @@ export default async function DeputyPage({ params }: Props) {
           </div>
           <div style={{ width: 180, flexShrink: 0 }}>
             <ScoreRing score={d.overallScore} votesCount={d.votesCount} />
-            <Link href="/vote" style={{ textDecoration: "none" }}>
-              <button className="btn-vote">Оценить работу</button>
-            </Link>
+            <VoteModal d={d} />
           </div>
         </div>
 

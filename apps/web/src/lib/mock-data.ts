@@ -42,6 +42,7 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-romanova",
     slug: "romanova-anna",
+    photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
     fullName: "Романова Анна Викторовна",
     initials: "РА",
     avatarColor: ["#818CF8", "#4338CA"],
@@ -105,6 +106,7 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-sokolova",
     slug: "sokolova-olga",
+    photoUrl: "https://randomuser.me/api/portraits/women/65.jpg",
     fullName: "Соколова Ольга Дмитриевна",
     initials: "СО",
     avatarColor: ["#14B8A6", "#0F766E"],
@@ -162,6 +164,7 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-kovalev",
     slug: "kovalev-mikhail",
+    photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
     fullName: "Ковалёв Михаил Андреевич",
     initials: "КМ",
     avatarColor: ["#F87171", "#B91C1C"],
@@ -216,6 +219,7 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-ivanov",
     slug: "ivanov-sergey",
+    photoUrl: "https://randomuser.me/api/portraits/men/75.jpg",
     fullName: "Иванов Сергей Петрович",
     initials: "ИП",
     avatarColor: ["#60A5FA", "#1D4ED8"],
@@ -273,6 +277,7 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-gusev",
     slug: "gusev-viktor",
+    photoUrl: "https://randomuser.me/api/portraits/men/11.jpg",
     fullName: "Гусев Виктор Николаевич",
     initials: "ГВ",
     avatarColor: ["#FB923C", "#C2410C"],
@@ -327,6 +332,7 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-petrova",
     slug: "petrova-elena",
+    photoUrl: "https://randomuser.me/api/portraits/women/26.jpg",
     fullName: "Петрова Елена Сергеевна",
     initials: "ПЕ",
     avatarColor: ["#34D399", "#047857"],
@@ -383,6 +389,7 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-volkov",
     slug: "volkov-dmitry",
+    photoUrl: "https://randomuser.me/api/portraits/men/58.jpg",
     fullName: "Волков Дмитрий Александрович",
     initials: "ВД",
     avatarColor: ["#FBBF24", "#B45309"],
@@ -437,6 +444,7 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-nikitina",
     slug: "nikitina-maria",
+    photoUrl: "https://randomuser.me/api/portraits/women/12.jpg",
     fullName: "Никитина Мария Игоревна",
     initials: "НМ",
     avatarColor: ["#F472B6", "#BE185D"],

@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import SiteFooter from "@/components/SiteFooter";
 import ElectionBanner from "@/components/ElectionBanner";
 import HomeTopList from "@/components/HomeTopList";
+import HeroFilters from "@/components/HeroFilters";
 import { DEPUTIES, FEED_EVENTS, OVERVIEW_STATS, getLevelCounts } from "@/lib/mock-data";
 import Link from "next/link";
 
@@ -27,21 +28,7 @@ export default function HomePage() {
             Обещания, результаты, доходы и имущество депутатов — проверяемые факты плюс анонимная
             народная оценка. Защити свой голос от ботов и накруток.
           </p>
-          <div className="search-row anim d4">
-            <div className="search-box">
-              <span className="ic">⌕</span>
-              <input placeholder="Поиск по ФИО депутата или номеру округа…" />
-            </div>
-            <Link className="btn btn-lg" href="/deputies">
-              Найти
-            </Link>
-          </div>
-          <div className="chips anim d5">
-            <span className="chip">Уровень: <b>Все ▾</b></span>
-            <span className="chip">Регион: <b>Все ▾</b></span>
-            <span className="chip">Фракция: <b>Все ▾</b></span>
-            <span className="chip">Рейтинг: <b>Любой ▾</b></span>
-          </div>
+          <HeroFilters deputies={DEPUTIES} />
         </div>
       </div>
 
