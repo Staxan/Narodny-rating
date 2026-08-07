@@ -1,0 +1,179 @@
+import Navbar from "@/components/Navbar";
+import SiteFooter from "@/components/SiteFooter";
+import Link from "next/link";
+
+/** Блоки рейтинга и веса (единый источник — config формулы) */
+const FORMULA_BLOCKS = [
+  { name: "Выполнение обещаний", weight: 25, source: "Статусы обещаний (автоматически)" },
+  { name: "Управленческий результат", weight: 20, source: "Оценка с обоснованием либо «нет данных»" },
+  { name: "Народная оценка", weight: 20, source: "Подтверждённые голоса граждан (автоматически)" },
+  { name: "Антикоррупционная чистота", weight: 15, source: "Пока «нет данных» — модуль появится позже" },
+  { name: "Бюджетная дисциплина", weight: 10, source: "Оценка с обоснованием либо «нет данных»" },
+  { name: "Реакция на проблемы", weight: 5, source: "Оценка с обоснованием либо «нет данных»" },
+  { name: "Прозрачность", weight: 5, source: "Оценка с обоснованием либо «нет данных»" },
+];
+
+const STEPS = [
+  {
+    n: "1",
+    title: "Вход через Telegram",
+    text: "Регистрация на сайте только через Telegram Login Widget. Это исключает анонимные фейковые аккаунты.",
+  },
+  {
+    n: "2",
+    title: "Проверка членства в канале",
+    text: "Система проверяет, что вы состоите в официальном канале проекта не менее 24 часов. Свежие боты-аккаунты не проходят этот порог.",
+  },
+  {
+    n: "3",
+    title: "Одноразовый токен",
+    text: "После заполнения формы оценки генерируется одноразовый токен подтверждения со сроком жизни 10 минут.",
+  },
+  {
+    n: "4",
+    title: "Подтверждение в боте",
+    text: "Вы переходите в Telegram-бота по ссылке t.me/BotName?start=confirm_ТОКЕН. Бот проверяет токен, ваш аккаунт и членство в канале.",
+  },
+  {
+    n: "5",
+    title: "Анонимная запись голоса",
+    text: "В базе хранится только необратимый хэш вашего Telegram-идентификатора, оценки и время. Связи «человек → конкретный голос» не существует.",
+  },
+  {
+    n: "6",
+    title: "Переголосование",
+    text: "Вы можете изменить свой голос в любой момент — один подтверждённый идентификатор = один активный голос по каждому депутату.",
+  },
+];
+
+/** Страница «Как это работает»: формула, механизм голосования, защита. */
+export default function HowItWorksPage() {
+  return (
+    <>
+      <Navbar active="how" />
+
+      <div className="hero" style={{ padding: "52px 0 60px" }}>
+        <div className="wrap">
+          <span className="eyebrow anim d1">Прозрачность</span>
+          <h1 className="anim d2" style={{ fontSize: 36 }}>Как это работает</h1>
+          <p className="sub anim d3">
+            Система соединяет два слоя: проверяемые факты из открытых источников и защищённую
+            народную оценку граждан. Формула открыта и видна каждому.
+          </p>
+        </div>
+      </div>
+
+      <div className="wrap">
+        {/* Формула */}
+        <div className="card lift anim d1" style={{ marginTop: 30 }}>
+          <div className="sec-head">
+            <h2>▤ Формула рейтинга · версия 1.0 от 07.08.2026</h2>
+          </div>
+          <p style={{ color: "var(--text-2)", fontSize: 14.5, marginBottom: 18 }}>
+            Итоговый балл = средневзвешенное по заполненным блокам. Если блок не заполнен, он
+            показывается явно как «нет данных» и не участвует в расчёте. Веса могут меняться
+            только публично и с фиксацией версии формулы.
+          </p>
+          {FORMULA_BLOCKS.map((b) => (
+            <div className="blk" key={b.name}>
+              <div className="blk-name">{b.name} <span className="w">· вес {b.weight}%</span></div>
+              <div style={{ flex: 1, color: "var(--text-2)", fontSize: 13.5 }}>{b.source}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Механизм голосования */}
+        <div className="card lift anim d2 mt">
+          <div className="sec-head">
+            <h2>🔐 Как защищён ваш голос</h2>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {STEPS.map((s) => (
+              <div
+                key={s.n}
+                style={{
+                  background: "var(--bg)",
+                  border: "1px solid var(--border)",
+                  borderRadius: 12,
+                  padding: "16px 18px",
+                  display: "flex",
+                  gap: 14,
+                }}
+              >
+                <div
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: 10,
+                    background: "linear-gradient(180deg, var(--accent-2), var(--accent))",
+                    color: "#fff",
+                    fontWeight: 800,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    boxShadow: "var(--sh-accent)",
+                  }}
+                >
+                  {s.n}
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>{s.title}</div>
+                  <div style={{ color: "var(--text-2)", fontSize: 13.5, marginTop: 3 }}>{s.text}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Защита от накруток */}
+        <div className="card lift anim d3 mt">
+          <div className="sec-head">
+            <h2>🛡 Защита от накруток и манипуляций</h2>
+          </div>
+          <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 12 }}>
+            {[
+              "Голосовать могут только реальные Telegram-аккаунты: вход через Login Widget и подтверждение в боте.",
+              "Порог членства в канале — 24 часа: боты «на один день» не успевают получить право голоса.",
+              "Один идентификатор — один активный голос по каждому депутату (технически гарантировано).",
+              "Одноразовые токены со сроком жизни 10 минут, привязанные к конкретному аккаунту.",
+              "Анонимность: в базе нет Telegram-идентификаторов — только необратимые хэши. Даже администраторы не видят, кто как голосовал.",
+              "Комментарии граждан не публикуются — в карточках показываются только обезличенные счётчики категорий проблем.",
+              "Подозрительные всплески голосов отслеживаются и уходят на проверку.",
+            ].map((t, i) => (
+              <li key={i} style={{ display: "flex", gap: 11, fontSize: 14.5 }}>
+                <span style={{ color: "var(--accent)", fontWeight: 800 }}>✓</span>
+                <span>{t}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="disclaimer anim d4">
+          ⚠ Формула и правила могут уточняться — каждое изменение фиксируется новой версией и
+          отображается на этой странице. Изменение задним числом под конкретного депутата
+          невозможно: все версии сохраняются.
+        </div>
+
+        <div className="card join anim d5 mt" style={{ textAlign: "center" }}>
+          <h3>Готовы участвовать?</h3>
+          <p style={{ maxWidth: 520, margin: "0 auto 16px" }}>
+            Найдите депутата своего округа и оцените его работу. Это займёт две минуты, а ваш голос
+            будет анонимным и защищённым.
+          </p>
+          <Link className="btn btn-lg" href="/deputies" style={{ display: "inline-flex" }}>
+            Перейти к списку депутатов
+          </Link>
+        </div>
+      </div>
+
+      <SiteFooter />
+    </>
+  );
+}

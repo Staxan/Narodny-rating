@@ -1,0 +1,21 @@
+# Зависимости
+node_modules/
+
+# Сборка Next.js
+.next/
+out/
+
+# Переменные окружения и секреты
+.env
+.env.*
+*.local
+
+# IDE и ОС
+.vscode/
+.idea/
+.DS_Store
+
+# Логи
+npm-debug.log*
+yarn-error.log*
+*.log
