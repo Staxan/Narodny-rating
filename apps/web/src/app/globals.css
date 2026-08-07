@@ -83,7 +83,9 @@ a {
   from { width: 0; }
 }
 
-.anim { animation: fadeUp 0.65s var(--ease) both; }
+/* fill-mode backwards: после анимации transform не остаётся на элементе,
+   иначе он ломает position: fixed у вложенных модалок и дропдаунов */
+.anim { animation: fadeUp 0.65s var(--ease) backwards; }
 .d1 { animation-delay: 0.07s; }
 .d2 { animation-delay: 0.14s; }
 .d3 { animation-delay: 0.21s; }
