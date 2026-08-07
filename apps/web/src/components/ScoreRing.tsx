@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { scoreCssColor } from "@/lib/types";
 
 interface ScoreRingProps {
-  score: number; // 0–100
+  /** Народный рейтинг: процент голосов «за» (0–100) */
+  score: number;
+  /** Общее число подтверждённых голосов */
   votesCount: number;
 }
 
 /**
- * Кольцевой индикатор итогового рейтинга.
+ * Кольцевой индикатор Народного рейтинга (процент голосов «за»).
  * Дуга анимированно «рисуется» после монтирования (плавный переход),
  * цвет зависит от балла по порогам ТЗ.
  */
@@ -36,13 +38,13 @@ export default function ScoreRing({ score, votesCount }: ScoreRingProps) {
       >
         <div className="score-inner">
           <div className="score-num" style={{ color }}>
-            {score}
+            {score}%
           </div>
-          <div className="score-lbl">из 100</div>
+          <div className="score-lbl">«за»</div>
         </div>
       </div>
       <div className="votes-lbl">
-        {votesCount.toLocaleString("ru-RU")} подтверждённых голосов
+        Народный рейтинг · {votesCount.toLocaleString("ru-RU")} голосов
       </div>
     </div>
   );

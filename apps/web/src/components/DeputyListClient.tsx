@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { Deputy, DeputyLevel } from "@/lib/types";
-import { LEVEL_SHORT } from "@/lib/types";
+import { LEVEL_SHORT, totalVotes } from "@/lib/types";
 import DeputyRow from "@/components/DeputyRow";
 
 type LevelFilter = "all" | DeputyLevel;
@@ -56,10 +56,10 @@ export default function DeputyListClient({ deputies, initial = {} }: DeputyListC
       if (level !== "all" && d.level !== level) return false;
       if (region !== "all" && d.region !== region) return false;
       if (faction !== "all" && d.faction !== faction) return false;
-      // Фильтр по диапазону рейтинга (пороги из ТЗ)
-      if (ratingFilter === "high" && d.overallScore < 70) return false;
-      if (ratingFilter === "mid" && (d.overallScore < 40 || d.overallScore >= 70)) return false;
-      if (ratingFilter === "low" && d.overallScore >= 40) return false;
+      // Фильтр по диапазону народного рейтинга (пороги из ТЗ)
+      if (ratingFilter === "high" && d.peopleScore < 70) return false;
+      if (ratingFilter === "mid" && (d.peopleScore < 40 || d.peopleScore >= 70)) return false;
+      if (ratingFilter === "low" && d.peopleScore >= 40) return false;
       if (query.trim()) {
         const q = query.trim().toLowerCase();
         const hay = `${d.fullName} ${d.position} ${d.district ?? ""}`.toLowerCase();
@@ -69,10 +69,10 @@ export default function DeputyListClient({ deputies, initial = {} }: DeputyListC
     });
     switch (sort) {
       case "rating":
-        res = res.sort((a, b) => b.overallScore - a.overallScore);
+        res = res.sort((a, b) => b.peopleScore - a.peopleScore);
         break;
       case "votes":
-        res = res.sort((a, b) => b.votesCount - a.votesCount);
+        res = res.sort((a, b) => totalVotes(b.people) - totalVotes(a.people));
         break;
       case "name":
         res = res.sort((a, b) => a.fullName.localeCompare(b.fullName, "ru"));

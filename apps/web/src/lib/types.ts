@@ -10,6 +10,9 @@ export type PromiseStatus = "pending" | "in_progress" | "partial" | "fulfilled" 
 /** Позиция депутата в ключевом голосовании */
 export type VotePosition = "yea" | "nay" | "abstain" | "absent";
 
+/** Вариант народного голоса */
+export type PeopleChoice = "for" | "against" | "abstain";
+
 export interface OfficialPromise {
   id: string;
   title: string;
@@ -28,12 +31,11 @@ export interface DeputyAsset {
   source?: string;
 }
 
-/** Блок рейтинга (согласно формуле из ТЗ 1.1) */
+/** Блок профессионального рейтинга (веса из ТЗ 1.1, версия 2.0 — два рейтинга) */
 export interface RatingBlock {
   code:
     | "promises"
     | "management"
-    | "people"
     | "anticorruption"
     | "budget"
     | "response"
@@ -43,14 +45,11 @@ export interface RatingBlock {
   score: number | null; // null = нет данных
 }
 
-export interface PeopleRating {
-  improvementsYesPercent: number;
-  promisesScore: number; // 1–5
-  responseScore: number; // 1–5
-  trustScore: number; // 1–5
-  supportYesPercent: number;
-  problems: { category: string; count: number }[];
-  votesCount: number;
+/** Народный рейтинг: голоса «за / против / воздержался» */
+export interface PeopleVotes {
+  for: number;
+  against: number;
+  abstain: number;
 }
 
 export interface ParliamentWork {
@@ -81,12 +80,17 @@ export interface Deputy {
   officialIncome: number;
   incomeYear: number;
   spouseIncome?: number;
-  overallScore: number;
-  votesCount: number;
+
+  /** Профессиональный рейтинг 0–100 (объективные данные, голоса людей не влияют) */
+  professionalScore: number;
+  /** Народный рейтинг 0–100 (процент голосов «за») */
+  peopleScore: number;
+  /** Голоса граждан: за / против / воздержался */
+  people: PeopleVotes;
+
   ratingBlocks: RatingBlock[];
   promises: OfficialPromise[];
   assets: DeputyAsset[];
-  people: PeopleRating;
   parliament: ParliamentWork;
   ratingHistory: { date: string; score: number }[];
 }
@@ -134,3 +138,26 @@ export const LEVEL_SHORT: Record<DeputyLevel, string> = {
   regional: "Региональные",
   municipal: "Муниципальные",
 };
+
+/** Сумма голосов по депутату */
+export function totalVotes(p: PeopleVotes): number {
+  return p.for + p.against + p.abstain;
+}
+
+/** Народный рейтинг = процент голосов «за» */
+export function peopleScore(p: PeopleVotes): number {
+  const total = totalVotes(p);
+  if (total === 0) return 0;
+  return Math.round((p.for / total) * 100);
+}
+
+/**
+ * Порог расхождения двух рейтингов (пунктов).
+ * Если |профессиональный − народный| > порога — показываем сигнал «расхождение оценок».
+ */
+export const DIVERGENCE_THRESHOLD = 30;
+
+/** Есть ли заметное расхождение между профессиональным и народным рейтингом */
+export function hasDivergence(professional: number, people: number): boolean {
+  return Math.abs(professional - people) > DIVERGENCE_THRESHOLD;
+}

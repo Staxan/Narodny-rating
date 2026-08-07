@@ -1,9 +1,14 @@
 import Link from "next/link";
 import type { Deputy } from "@/lib/types";
+import { totalVotes } from "@/lib/types";
 import RatingBadge from "./RatingBadge";
 import Avatar from "./Avatar";
 
-/** Строка депутата в списках (топ на главной, страница списка). */
+/**
+ * Строка депутата в списках (топ на главной, страница списка).
+ * Основной показатель — Народный рейтинг (сервис называется «Народный рейтинг»);
+ * профессиональный рейтинг показан вторичной строкой.
+ */
 export default function DeputyRow({ d }: { d: Deputy }) {
   return (
     <Link href={`/deputies/${d.slug}`} className="dep-row">
@@ -20,8 +25,10 @@ export default function DeputyRow({ d }: { d: Deputy }) {
         {d.faction}
       </span>
       <div className="dep-rating">
-        <RatingBadge score={d.overallScore} />
-        <div className="votes">{d.votesCount.toLocaleString("ru-RU")} голосов</div>
+        <RatingBadge score={d.peopleScore} />
+        <div className="votes">
+          {totalVotes(d.people).toLocaleString("ru-RU")} голосов · проф. {d.professionalScore}
+        </div>
       </div>
     </Link>
   );

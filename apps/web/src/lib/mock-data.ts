@@ -1,24 +1,32 @@
 // Мок-данные проекта «Народный рейтинг» (Этап 1).
 // Все данные вымышленные и служат только для отработки интерфейса.
 // Позже заменяются ответами API без изменения компонентов.
+//
+// ВЕРСИЯ 2.0 — ДВА РЕЙТИНГА:
+//   1. Профессиональный рейтинг — объективные данные из открытых источников
+//      (обещания, работа в парламенте, бюджет и т.д.). Голоса людей НЕ влияют.
+//      Веса блоков: обещания 30%, управление 25%, антикоррупция 20%,
+//      бюджет 15%, реакция 5%, прозрачность 5%.
+//   2. Народный рейтинг — отношение людей: за / против / воздержался.
+//      Балл = процент голосов «за».
 
-import type { Deputy, DeputyLevel, FeedEvent, RatingBlock } from "./types";
+import type { Deputy, DeputyLevel, FeedEvent, PeopleVotes, RatingBlock } from "./types";
+import { peopleScore } from "./types";
 
-/** Стандартные блоки рейтинга (веса из ТЗ 1.1). score = null — нет данных. */
+/** Стандартные блоки профессионального рейтинга (веса версии 2.0). */
 function blocks(scores: Partial<Record<RatingBlock["code"], number | null>>): RatingBlock[] {
   return [
-    { code: "promises", name: "Выполнение обещаний", weight: 25, score: scores.promises ?? null },
-    { code: "management", name: "Управленческий результат", weight: 20, score: scores.management ?? null },
-    { code: "people", name: "Народная оценка", weight: 20, score: scores.people ?? null },
-    { code: "anticorruption", name: "Антикоррупционная чистота", weight: 15, score: scores.anticorruption ?? null },
-    { code: "budget", name: "Бюджетная дисциплина", weight: 10, score: scores.budget ?? null },
+    { code: "promises", name: "Выполнение обещаний", weight: 30, score: scores.promises ?? null },
+    { code: "management", name: "Управленческий результат", weight: 25, score: scores.management ?? null },
+    { code: "anticorruption", name: "Антикоррупционная чистота", weight: 20, score: scores.anticorruption ?? null },
+    { code: "budget", name: "Бюджетная дисциплина", weight: 15, score: scores.budget ?? null },
     { code: "response", name: "Реакция на проблемы", weight: 5, score: scores.response ?? null },
     { code: "transparency", name: "Прозрачность", weight: 5, score: scores.transparency ?? null },
   ];
 }
 
-/** Итоговый балл = средневзвешенное по заполненным блокам (формула Этапа 1). */
-export function computeOverall(bs: RatingBlock[]): number {
+/** Профессиональный рейтинг = средневзвешенное по заполненным блокам. */
+export function computeProfessional(bs: RatingBlock[]): number {
   const filled = bs.filter((b) => b.score !== null);
   if (filled.length <= 1) return 0;
   const sumW = filled.reduce((s, b) => s + b.weight, 0);
@@ -42,10 +50,10 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-romanova",
     slug: "romanova-anna",
-    photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
     fullName: "Романова Анна Викторовна",
     initials: "РА",
     avatarColor: ["#818CF8", "#4338CA"],
+    photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
     position: "Депутат Государственной думы VIII созыва",
     level: "federal",
     region: "г. Москва",
@@ -59,9 +67,10 @@ export const DEPUTIES: Deputy[] = [
     officialIncome: 5_820_000,
     incomeYear: 2025,
     spouseIncome: 1_140_000,
-    overallScore: 0,
-    votesCount: 1103,
-    ratingBlocks: blocks({ promises: 52, management: 58, people: 49, budget: 61, response: 71, transparency: 66 }),
+    professionalScore: 0,
+    peopleScore: 0,
+    people: { for: 452, against: 548, abstain: 103 },
+    ratingBlocks: blocks({ promises: 52, management: 58, budget: 61, response: 71, transparency: 66 }),
     promises: [
       { id: "p1", title: "Индексация МРОТ выше инфляции", deadline: "01.01.2026", status: "fulfilled", progressPercent: 100, verificationSource: "Федеральный закон от 28.12.2025" },
       { id: "p2", title: "Приёмная в округе № 205 — еженедельные встречи", deadline: "постоянно", status: "fulfilled", progressPercent: 100, verificationSource: "График приёмной, фотоотчёты" },
@@ -76,19 +85,6 @@ export const DEPUTIES: Deputy[] = [
       { id: "a3", assetType: "vehicle", description: "Автомобиль Toyota Camry, 2023", declared: true, source: "Декларация" },
       { id: "a4", assetType: "share", description: "Доля 25% в ООО «Вектор-Плюс»", declared: false, source: "Реестр юрлиц · открытые данные" },
     ],
-    people: {
-      improvementsYesPercent: 41,
-      promisesScore: 2.8,
-      responseScore: 3.2,
-      trustScore: 2.9,
-      supportYesPercent: 38,
-      problems: [
-        { category: "Медицина", count: 34 },
-        { category: "Социальная поддержка", count: 22 },
-        { category: "ЖКХ", count: 17 },
-      ],
-      votesCount: 1103,
-    },
     parliament: {
       attendancePercent: 78,
       billsIntroduced: 14,
@@ -106,10 +102,10 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-sokolova",
     slug: "sokolova-olga",
-    photoUrl: "https://randomuser.me/api/portraits/women/65.jpg",
     fullName: "Соколова Ольга Дмитриевна",
     initials: "СО",
     avatarColor: ["#14B8A6", "#0F766E"],
+    photoUrl: "https://randomuser.me/api/portraits/women/65.jpg",
     position: "Депутат городской думы Екатеринбурга",
     level: "municipal",
     region: "Свердловская область",
@@ -122,9 +118,10 @@ export const DEPUTIES: Deputy[] = [
     runsAgainIn2026: false,
     officialIncome: 2_140_000,
     incomeYear: 2025,
-    overallScore: 0,
-    votesCount: 2314,
-    ratingBlocks: blocks({ promises: 88, management: 82, people: 84, budget: 79, response: 90, transparency: 85 }),
+    professionalScore: 0,
+    peopleScore: 0,
+    people: { for: 1805, against: 281, abstain: 228 },
+    ratingBlocks: blocks({ promises: 88, management: 82, budget: 79, response: 90, transparency: 85 }),
     promises: [
       { id: "p1", title: "Ремонт 20 км дорог района", deadline: "01.10.2025", status: "fulfilled", progressPercent: 100, verificationSource: "Акты работ, фотофиксация" },
       { id: "p2", title: "Благоустройство 12 дворов", deadline: "01.09.2026", status: "in_progress", progressPercent: 66, verificationSource: "Отчёт администрации" },
@@ -135,19 +132,6 @@ export const DEPUTIES: Deputy[] = [
       { id: "a1", assetType: "real_estate", description: "Квартира 62 м² — собственность", declared: true, source: "Росреестр · из декларации" },
       { id: "a2", assetType: "vehicle", description: "Автомобиль Lada Vesta, 2022", declared: true, source: "Декларация" },
     ],
-    people: {
-      improvementsYesPercent: 74,
-      promisesScore: 4.4,
-      responseScore: 4.2,
-      trustScore: 4.5,
-      supportYesPercent: 81,
-      problems: [
-        { category: "Дороги", count: 12 },
-        { category: "ЖКХ", count: 9 },
-        { category: "Благоустройство", count: 6 },
-      ],
-      votesCount: 2314,
-    },
     parliament: {
       attendancePercent: 94,
       billsIntroduced: 9,
@@ -159,15 +143,15 @@ export const DEPUTIES: Deputy[] = [
         { law: "О повышении тарифов на вывоз мусора", date: "11.03.2025", position: "nay" },
       ],
     },
-    ratingHistory: history(80, +5),
+    ratingHistory: history(82, +5),
   },
   {
     id: "d-kovalev",
     slug: "kovalev-mikhail",
-    photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
     fullName: "Ковалёв Михаил Андреевич",
     initials: "КМ",
     avatarColor: ["#F87171", "#B91C1C"],
+    photoUrl: "https://randomuser.me/api/portraits/men/32.jpg",
     position: "Депутат Законодательного собрания Свердловской области",
     level: "regional",
     region: "Свердловская область",
@@ -180,9 +164,10 @@ export const DEPUTIES: Deputy[] = [
     runsAgainIn2026: true,
     officialIncome: 3_460_000,
     incomeYear: 2025,
-    overallScore: 0,
-    votesCount: 1877,
-    ratingBlocks: blocks({ promises: 74, management: 71, people: 76, budget: 68, response: 80, transparency: 72 }),
+    professionalScore: 0,
+    peopleScore: 0,
+    people: { for: 1314, against: 394, abstain: 169 },
+    ratingBlocks: blocks({ promises: 74, management: 71, budget: 68, response: 80, transparency: 72 }),
     promises: [
       { id: "p1", title: "Ремонт школ в 5 сельских территориях", deadline: "01.09.2025", status: "fulfilled", progressPercent: 100, verificationSource: "Акты приёмки" },
       { id: "p2", title: "Льготный проезд для пенсионеров", deadline: "01.01.2025", status: "fulfilled", progressPercent: 100, verificationSource: "Закон Свердловской области" },
@@ -192,18 +177,6 @@ export const DEPUTIES: Deputy[] = [
       { id: "a1", assetType: "real_estate", description: "Дом 140 м² — собственность", declared: true, source: "Росреестр · из декларации" },
       { id: "a2", assetType: "vehicle", description: "Автомобиль УАЗ Патриот, 2020", declared: true, source: "Декларация" },
     ],
-    people: {
-      improvementsYesPercent: 62,
-      promisesScore: 3.9,
-      responseScore: 4.0,
-      trustScore: 3.8,
-      supportYesPercent: 69,
-      problems: [
-        { category: "ЖКХ", count: 18 },
-        { category: "Транспорт", count: 11 },
-      ],
-      votesCount: 1877,
-    },
     parliament: {
       attendancePercent: 88,
       billsIntroduced: 21,
@@ -219,10 +192,10 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-ivanov",
     slug: "ivanov-sergey",
-    photoUrl: "https://randomuser.me/api/portraits/men/75.jpg",
     fullName: "Иванов Сергей Петрович",
     initials: "ИП",
     avatarColor: ["#60A5FA", "#1D4ED8"],
+    photoUrl: "https://randomuser.me/api/portraits/men/75.jpg",
     position: "Депутат Московской городской думы",
     level: "regional",
     region: "г. Москва",
@@ -236,9 +209,10 @@ export const DEPUTIES: Deputy[] = [
     officialIncome: 4_980_000,
     incomeYear: 2025,
     spouseIncome: 890_000,
-    overallScore: 0,
-    votesCount: 1447,
-    ratingBlocks: blocks({ promises: 58, management: 65, people: 61, budget: 52, response: 70, transparency: 75 }),
+    professionalScore: 0,
+    peopleScore: 0,
+    people: { for: 825, against: 468, abstain: 154 },
+    ratingBlocks: blocks({ promises: 58, management: 65, budget: 52, response: 70, transparency: 75 }),
     promises: [
       { id: "p1", title: "Открыть новую поликлинику в округе", deadline: "31.12.2025", status: "failed", progressPercent: 45, verificationSource: "Данные стройнадзора" },
       { id: "p2", title: "Дополнительные группы в детсадах", deadline: "01.09.2026", status: "in_progress", progressPercent: 70, verificationSource: "Отчёт департамента образования" },
@@ -249,19 +223,6 @@ export const DEPUTIES: Deputy[] = [
       { id: "a2", assetType: "land", description: "Земельный участок 8 соток", declared: true, source: "Росреестр · из декларации" },
       { id: "a3", assetType: "vehicle", description: "Автомобиль Skoda Octavia, 2021", declared: true, source: "Декларация" },
     ],
-    people: {
-      improvementsYesPercent: 64,
-      promisesScore: 3.4,
-      responseScore: 3.1,
-      trustScore: 3.3,
-      supportYesPercent: 57,
-      problems: [
-        { category: "ЖКХ", count: 41 },
-        { category: "Дороги", count: 27 },
-        { category: "Медицина", count: 19 },
-      ],
-      votesCount: 1447,
-    },
     parliament: {
       attendancePercent: 82,
       billsIntroduced: 6,
@@ -277,10 +238,10 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-gusev",
     slug: "gusev-viktor",
-    photoUrl: "https://randomuser.me/api/portraits/men/11.jpg",
     fullName: "Гусев Виктор Николаевич",
     initials: "ГВ",
     avatarColor: ["#FB923C", "#C2410C"],
+    photoUrl: "https://randomuser.me/api/portraits/men/11.jpg",
     position: "Депутат Совета депутатов г. о. Химки",
     level: "municipal",
     region: "Московская область",
@@ -293,9 +254,11 @@ export const DEPUTIES: Deputy[] = [
     runsAgainIn2026: true,
     officialIncome: 1_780_000,
     incomeYear: 2025,
-    overallScore: 0,
-    votesCount: 986,
-    ratingBlocks: blocks({ promises: 28, management: 34, people: 31, budget: 40, response: 25, transparency: 38 }),
+    professionalScore: 0,
+    peopleScore: 0,
+    // Пример расхождения: профрейтинг низкий, но 66% «за» — сигнал накрутки/манипуляции
+    people: { for: 712, against: 248, abstain: 126 },
+    ratingBlocks: blocks({ promises: 28, management: 34, budget: 40, response: 25, transparency: 38 }),
     promises: [
       { id: "p1", title: "Ремонт кровель 6 домов", deadline: "01.10.2024", status: "failed", progressPercent: 15, verificationSource: "Обращения жителей, акты" },
       { id: "p2", title: "Детская площадка в мкр. Сходня", deadline: "01.06.2025", status: "in_progress", progressPercent: 30, verificationSource: "Фотофиксация" },
@@ -304,19 +267,6 @@ export const DEPUTIES: Deputy[] = [
     assets: [
       { id: "a1", assetType: "real_estate", description: "Квартира 58 м² — собственность", declared: true, source: "Росреестр · из декларации" },
     ],
-    people: {
-      improvementsYesPercent: 22,
-      promisesScore: 1.9,
-      responseScore: 2.2,
-      trustScore: 2.0,
-      supportYesPercent: 18,
-      problems: [
-        { category: "ЖКХ", count: 56 },
-        { category: "Благоустройство", count: 31 },
-        { category: "Безопасность", count: 12 },
-      ],
-      votesCount: 986,
-    },
     parliament: {
       attendancePercent: 61,
       billsIntroduced: 2,
@@ -332,10 +282,10 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-petrova",
     slug: "petrova-elena",
-    photoUrl: "https://randomuser.me/api/portraits/women/26.jpg",
     fullName: "Петрова Елена Сергеевна",
     initials: "ПЕ",
     avatarColor: ["#34D399", "#047857"],
+    photoUrl: "https://randomuser.me/api/portraits/women/26.jpg",
     position: "Депутат Государственной думы VIII созыва",
     level: "federal",
     region: "Санкт-Петербург",
@@ -349,9 +299,10 @@ export const DEPUTIES: Deputy[] = [
     officialIncome: 6_240_000,
     incomeYear: 2025,
     spouseIncome: 2_300_000,
-    overallScore: 0,
-    votesCount: 1622,
-    ratingBlocks: blocks({ promises: 71, management: 74, people: 68, budget: 77, response: 65, transparency: 70 }),
+    professionalScore: 0,
+    peopleScore: 0,
+    people: { for: 1136, against: 324, abstain: 162 },
+    ratingBlocks: blocks({ promises: 71, management: 74, budget: 77, response: 65, transparency: 70 }),
     promises: [
       { id: "p1", title: "Капремонт 12 школьных спортзалов", deadline: "01.09.2025", status: "fulfilled", progressPercent: 100, verificationSource: "Акты приёмки" },
       { id: "p2", title: "Программа горячего питания в школах", deadline: "01.09.2024", status: "fulfilled", progressPercent: 100, verificationSource: "Данные Рособрнадзора" },
@@ -362,18 +313,6 @@ export const DEPUTIES: Deputy[] = [
       { id: "a2", assetType: "real_estate", description: "Дача 86 м² — собственность", declared: true, source: "Росреестр · из декларации" },
       { id: "a3", assetType: "vehicle", description: "Автомобиль Kia Sportage, 2024", declared: true, source: "Декларация" },
     ],
-    people: {
-      improvementsYesPercent: 59,
-      promisesScore: 3.7,
-      responseScore: 3.5,
-      trustScore: 3.6,
-      supportYesPercent: 62,
-      problems: [
-        { category: "Образование", count: 15 },
-        { category: "Медицина", count: 12 },
-      ],
-      votesCount: 1622,
-    },
     parliament: {
       attendancePercent: 91,
       billsIntroduced: 18,
@@ -384,15 +323,15 @@ export const DEPUTIES: Deputy[] = [
         { law: "Об основах государственной политики в сфере образования", date: "02.07.2025", position: "yea" },
       ],
     },
-    ratingHistory: history(69, +4),
+    ratingHistory: history(71, +4),
   },
   {
     id: "d-volkov",
     slug: "volkov-dmitry",
-    photoUrl: "https://randomuser.me/api/portraits/men/58.jpg",
     fullName: "Волков Дмитрий Александрович",
     initials: "ВД",
     avatarColor: ["#FBBF24", "#B45309"],
+    photoUrl: "https://randomuser.me/api/portraits/men/58.jpg",
     position: "Депутат Законодательного собрания Пермского края",
     level: "regional",
     region: "Пермский край",
@@ -401,13 +340,14 @@ export const DEPUTIES: Deputy[] = [
     factionColor: "#6366F1",
     termStart: "13.09.2021",
     termEnd: "сентябрь 2026",
-    committee: " по промышленности и предпринимательству",
+    committee: "по промышленности и предпринимательству",
     runsAgainIn2026: true,
     officialIncome: 3_120_000,
     incomeYear: 2025,
-    overallScore: 0,
-    votesCount: 743,
-    ratingBlocks: blocks({ promises: 45, management: 51, people: 44, budget: 55, response: 48, transparency: 41 }),
+    professionalScore: 0,
+    peopleScore: 0,
+    people: { for: 282, against: 349, abstain: 112 },
+    ratingBlocks: blocks({ promises: 45, management: 51, budget: 55, response: 48, transparency: 41 }),
     promises: [
       { id: "p1", title: "Поддержка малого бизнеса: субсидии", deadline: "01.07.2025", status: "partial", progressPercent: 60, verificationSource: "Отчёт минэкономразвития края" },
       { id: "p2", title: "Ремонт моста через Каму", deadline: "01.12.2025", status: "in_progress", progressPercent: 45, verificationSource: "Данные подрядчика" },
@@ -417,18 +357,6 @@ export const DEPUTIES: Deputy[] = [
       { id: "a2", assetType: "share", description: "Доля 40% в ООО «УралТрейд»", declared: true, source: "Реестр юрлиц · из декларации" },
       { id: "a3", assetType: "vehicle", description: "Автомобиль BMW X3, 2022", declared: true, source: "Декларация" },
     ],
-    people: {
-      improvementsYesPercent: 38,
-      promisesScore: 2.9,
-      responseScore: 3.0,
-      trustScore: 2.7,
-      supportYesPercent: 35,
-      problems: [
-        { category: "Дороги", count: 22 },
-        { category: "Экономика", count: 14 },
-      ],
-      votesCount: 743,
-    },
     parliament: {
       attendancePercent: 72,
       billsIntroduced: 8,
@@ -444,10 +372,10 @@ export const DEPUTIES: Deputy[] = [
   {
     id: "d-nikitina",
     slug: "nikitina-maria",
-    photoUrl: "https://randomuser.me/api/portraits/women/12.jpg",
     fullName: "Никитина Мария Игоревна",
     initials: "НМ",
     avatarColor: ["#F472B6", "#BE185D"],
+    photoUrl: "https://randomuser.me/api/portraits/women/12.jpg",
     position: "Депутат Городской думы Нижнего Новгорода",
     level: "municipal",
     region: "Нижегородская область",
@@ -460,9 +388,10 @@ export const DEPUTIES: Deputy[] = [
     runsAgainIn2026: false,
     officialIncome: 1_960_000,
     incomeYear: 2025,
-    overallScore: 0,
-    votesCount: 1204,
-    ratingBlocks: blocks({ promises: 77, management: 70, people: 73, budget: 66, response: 84, transparency: 79 }),
+    professionalScore: 0,
+    peopleScore: 0,
+    people: { for: 942, against: 158, abstain: 104 },
+    ratingBlocks: blocks({ promises: 77, management: 70, budget: 66, response: 84, transparency: 79 }),
     promises: [
       { id: "p1", title: "Центр поддержки пожилых людей в округе", deadline: "01.03.2025", status: "fulfilled", progressPercent: 100, verificationSource: "Открытие центра, фотоотчёт" },
       { id: "p2", title: "Доступная среда: пандусы в 20 учреждениях", deadline: "01.09.2026", status: "in_progress", progressPercent: 65, verificationSource: "Реестр объектов" },
@@ -471,18 +400,6 @@ export const DEPUTIES: Deputy[] = [
     assets: [
       { id: "a1", assetType: "real_estate", description: "Квартира 54 м² — доля 1/3", declared: true, source: "Росреестр · из декларации" },
     ],
-    people: {
-      improvementsYesPercent: 68,
-      promisesScore: 4.1,
-      responseScore: 4.4,
-      trustScore: 4.2,
-      supportYesPercent: 74,
-      problems: [
-        { category: "Социальная поддержка", count: 9 },
-        { category: "Доступная среда", count: 7 },
-      ],
-      votesCount: 1204,
-    },
     parliament: {
       attendancePercent: 96,
       billsIntroduced: 11,
@@ -493,13 +410,14 @@ export const DEPUTIES: Deputy[] = [
         { law: "О социальных выплатах многодетным", date: "25.09.2025", position: "yea" },
       ],
     },
-    ratingHistory: history(72, +4),
+    ratingHistory: history(74, +4),
   },
 ];
 
-// Итоговые баллы считаются по формуле из блоков — единый источник истины
+// Итоговые баллы считаются по формулам — единый источник истины
 DEPUTIES.forEach((d) => {
-  d.overallScore = computeOverall(d.ratingBlocks);
+  d.professionalScore = computeProfessional(d.ratingBlocks);
+  d.peopleScore = peopleScore(d.people);
 });
 
 /** Лента последних изменений для главной страницы */
@@ -541,7 +459,7 @@ export const FEED_EVENTS: FeedEvent[] = [
 /** Общая статистика для главной */
 export const OVERVIEW_STATS = {
   deputiesCount: DEPUTIES.length,
-  votesCount: DEPUTIES.reduce((s, d) => s + d.votesCount, 0),
+  votesCount: DEPUTIES.reduce((s, d) => s + d.people.for + d.people.against + d.people.abstain, 0),
   regionsCount: new Set(DEPUTIES.map((d) => d.region)).size,
 };
 

@@ -16,7 +16,7 @@ interface HomeTopListProps {
 export default function HomeTopList({ deputies, counts }: HomeTopListProps) {
   const [tab, setTab] = useState<Tab>("all");
 
-  const sorted = [...deputies].sort((a, b) => b.overallScore - a.overallScore);
+  const sorted = [...deputies].sort((a, b) => b.peopleScore - a.peopleScore);
   const list = (tab === "all" ? sorted : sorted.filter((d) => d.level === tab)).slice(0, 5);
 
   const tabs: { key: Tab; label: string; cnt: number }[] = [

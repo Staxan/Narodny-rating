@@ -8,7 +8,7 @@ import RatingChart from "@/components/RatingChart";
 import Avatar from "@/components/Avatar";
 import VoteModal from "@/components/VoteModal";
 import { getDeputyBySlug } from "@/lib/mock-data";
-import { LEVEL_NAMES } from "@/lib/types";
+import { LEVEL_NAMES, totalVotes, hasDivergence, scoreCssColor } from "@/lib/types";
 
 /** Локализованные названия статусов обещаний */
 const STATUS_LABELS: Record<string, { label: string; cls: string }> = {
@@ -84,20 +84,74 @@ export default async function DeputyPage({ params }: Props) {
               )}
             </div>
           </div>
-          <div style={{ width: 180, flexShrink: 0 }}>
-            <ScoreRing score={d.overallScore} votesCount={d.votesCount} />
+          <div style={{ width: 190, flexShrink: 0 }}>
+            <ScoreRing score={d.peopleScore} votesCount={totalVotes(d.people)} />
             <VoteModal d={d} />
           </div>
         </div>
 
-        {/* Блоки рейтинга */}
+        {/* Сигнал расхождения двух рейтингов (детектор аномалий) */}
+        {hasDivergence(d.professionalScore, d.peopleScore) && (
+          <div
+            className="anim d3"
+            style={{
+              marginTop: 18,
+              background: "#FFF7ED",
+              border: "1px solid #FED7AA",
+              color: "#9A3412",
+              borderRadius: 12,
+              padding: "13px 18px",
+              fontSize: 14,
+              boxShadow: "var(--sh-sm)",
+            }}
+          >
+            ⚠ <b>Расхождение оценок:</b> профессиональный рейтинг — {d.professionalScore}, народный —{" "}
+            {d.peopleScore}. Сильное расхождение между фактическими данными и народной оценкой
+            может указывать на накрутку или манипуляцию — данные уходят на проверку.
+          </div>
+        )}
+
+        {/* Профессиональный рейтинг (объективные данные) */}
         <div className="card lift anim d3 mt">
-          <h2>
-            ▤ Блоки рейтинга{" "}
+          <div className="sec-head" style={{ marginBottom: 10 }}>
+            <h2 style={{ margin: 0 }}>▤ Профессиональный рейтинг</h2>
             <span style={{ fontWeight: 500, fontSize: 13, color: "var(--text-2)", marginLeft: "auto" }}>
-              формула открыта · <Link href="/how-it-works" style={{ color: "var(--accent)" }}>v1.0</Link>
+              открытые источники · голоса людей не влияют ·{" "}
+              <Link href="/how-it-works" style={{ color: "var(--accent)" }}>формула v2.0</Link>
             </span>
-          </h2>
+          </div>
+
+          {/* Итоговая шкала профессионального рейтинга 0–100 */}
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 18 }}>
+            <div
+              style={{
+                fontSize: 40,
+                fontWeight: 800,
+                lineHeight: 1,
+                color: scoreCssColor(d.professionalScore),
+                minWidth: 64,
+              }}
+            >
+              {d.professionalScore}
+            </div>
+            <div style={{ flex: 1 }}>
+              <div className="bar" style={{ height: 12, borderRadius: 6 }}>
+                <i
+                  style={{
+                    width: `${d.professionalScore}%`,
+                    background: `linear-gradient(90deg, ${scoreCssColor(d.professionalScore)}CC, ${scoreCssColor(d.professionalScore)})`,
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, color: "var(--text-2)", marginTop: 4 }}>
+                <span>0</span>
+                <span>из 100 · взвешено по 6 блокам</span>
+                <span>100</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ fontSize: 13, color: "var(--text-2)", marginBottom: 8 }}>Расшифровка по блокам:</div>
           <RatingBars blocks={d.ratingBlocks} />
         </div>
 
@@ -208,49 +262,31 @@ export default async function DeputyPage({ params }: Props) {
             </div>
 
             <div className="card lift anim d4">
-              <h2>👥 Народная оценка</h2>
-              <div className="q-row">
-                <span>Видите улучшения?</span>
-                <span className="q-val">{d.people.improvementsYesPercent}% «да»</span>
-              </div>
-              <div className="q-row">
-                <span>Выполняет обещания?</span>
-                <span className="q-val">
-                  <span className="stars">{stars(d.people.promisesScore)}</span>{" "}
-                  {d.people.promisesScore.toFixed(1).replace(".", ",")} / 5
-                </span>
-              </div>
-              <div className="q-row">
-                <span>Решение обращений</span>
-                <span className="q-val">
-                  <span className="stars">{stars(d.people.responseScore)}</span>{" "}
-                  {d.people.responseScore.toFixed(1).replace(".", ",")} / 5
-                </span>
-              </div>
-              <div className="q-row">
-                <span>Доверие</span>
-                <span className="q-val">
-                  <span className="stars">{stars(d.people.trustScore)}</span>{" "}
-                  {d.people.trustScore.toFixed(1).replace(".", ",")} / 5
-                </span>
-              </div>
-              <div className="q-row">
-                <span>Поддержка на выборах</span>
-                <span className="q-val">{d.people.supportYesPercent}% «да»</span>
-              </div>
-              <div style={{ height: 12 }} />
-              <div className="chart-note">Проблемы, о которых сообщают граждане:</div>
-              {d.people.problems.map((p, i) => (
-                <div className="q-row" key={p.category}>
-                  <span>{p.category}</span>
-                  <span
-                    className="q-val"
-                    style={{ color: i === 0 ? "var(--bad)" : i === 1 ? "var(--alert)" : "var(--mid)" }}
-                  >
-                    {p.count}
-                  </span>
+              <h2>👥 Народный рейтинг — голоса граждан</h2>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14.5, marginBottom: 6 }}>
+                  <span>За</span>
+                  <span style={{ fontWeight: 700, color: "var(--good)" }}>{d.people.for.toLocaleString("ru-RU")}</span>
                 </div>
-              ))}
+                <div className="bar"><i style={{ width: `${(d.people.for / totalVotes(d.people)) * 100}%`, background: "var(--good)" }} /></div>
+              </div>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14.5, marginBottom: 6 }}>
+                  <span>Против</span>
+                  <span style={{ fontWeight: 700, color: "var(--bad)" }}>{d.people.against.toLocaleString("ru-RU")}</span>
+                </div>
+                <div className="bar"><i style={{ width: `${(d.people.against / totalVotes(d.people)) * 100}%`, background: "var(--bad)" }} /></div>
+              </div>
+              <div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14.5, marginBottom: 6 }}>
+                  <span>Воздержался</span>
+                  <span style={{ fontWeight: 700, color: "var(--text-2)" }}>{d.people.abstain.toLocaleString("ru-RU")}</span>
+                </div>
+                <div className="bar"><i style={{ width: `${(d.people.abstain / totalVotes(d.people)) * 100}%`, background: "var(--text-2)" }} /></div>
+              </div>
+              <div className="chart-note" style={{ marginTop: 14 }}>
+                Всего подтверждённых голосов: {totalVotes(d.people).toLocaleString("ru-RU")}. Голосование анонимно и защищено от накруток.
+              </div>
             </div>
           </div>
         </div>
