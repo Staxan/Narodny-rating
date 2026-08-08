@@ -2,18 +2,26 @@
 
 import { useEffect, useState } from "react";
 
-interface RatingChartProps {
+interface Series {
+  name: string;
+  color: string;
   points: { date: string; score: number }[];
+}
+
+interface RatingChartProps {
+  series: Series[];
   height?: number;
 }
 
 /**
- * Линейный график динамики рейтинга.
- * Линия плавно «прорисовывается» при появлении на экране
- * (SVG stroke-dasharray анимация) — современный презентационный эффект.
+ * График динамики рейтингов.
+ * Две линии: народный рейтинг (teal) и профессиональный (navy) —
+ * сравнение во времени напрямую показывает их расхождение.
+ * Линии плавно «прорисовываются», точки интерактивны (ховер → значение).
  */
-export default function RatingChart({ points, height = 150 }: RatingChartProps) {
+export default function RatingChart({ series, height = 160 }: RatingChartProps) {
   const [drawn, setDrawn] = useState(false);
+  const [hover, setHover] = useState<{ s: number; i: number } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDrawn(true), 300);
@@ -25,68 +33,104 @@ export default function RatingChart({ points, height = 150 }: RatingChartProps) 
   const padX = 4;
   const padTop = 8;
   const padBottom = 24;
+  const n = Math.max(...series.map((s) => s.points.length));
 
-  // Перевод баллов (0–100) в координаты SVG
-  const x = (i: number) => padX + (i / (points.length - 1)) * (W - padX * 2);
-  const y = (score: number) =>
-    padTop + (1 - score / 100) * (H - padTop - padBottom);
+  const x = (i: number) => padX + (i / (n - 1)) * (W - padX * 2);
+  const y = (score: number) => padTop + (1 - score / 100) * (H - padTop - padBottom);
 
-  const line = points.map((p, i) => `${x(i)},${y(p.score)}`).join(" ");
-  // Замкнутая область под линией для мягкой подложки
-  const area = `${padX},${H - padBottom} ${line} ${W - padX},${H - padBottom}`;
-
-  const labels = points
+  const labels = series[0].points
     .map((p, i) => ({ ...p, i }))
     .filter((_, idx) => idx % 4 === 0);
 
   return (
-    <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
-      {/* Сетка */}
-      {[25, 50, 75].map((lvl) => (
-        <line
-          key={lvl}
-          x1={0}
-          y1={y(lvl)}
-          x2={W}
-          y2={y(lvl)}
-          stroke="#E3E9F2"
-          strokeDasharray="4 4"
-        />
-      ))}
-      {/* Область под линией */}
-      <polygon
-        points={area}
-        fill="rgba(13,148,136,0.10)"
-        style={{ opacity: drawn ? 1 : 0, transition: "opacity 1.2s var(--ease) 0.5s" }}
-      />
-      {/* Основная линия с анимацией прорисовки */}
-      <polyline
-        points={line}
-        fill="none"
-        stroke="#0D9488"
-        strokeWidth={2.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{
-          strokeDasharray: 1400,
-          strokeDashoffset: drawn ? 0 : 1400,
-          transition: "stroke-dashoffset 1.6s var(--ease)",
-        }}
-      />
-      {/* Точка последнего значения */}
-      <circle
-        cx={x(points.length - 1)}
-        cy={y(points[points.length - 1].score)}
-        r={4.5}
-        fill="#0D9488"
-        style={{ opacity: drawn ? 1 : 0, transition: "opacity 0.4s var(--ease) 1.4s" }}
-      />
-      {/* Подписи месяцев */}
-      {labels.map((p) => (
-        <text key={p.date} x={x(p.i)} y={H - 6} fontSize={11} fill="#64748B">
-          {p.date.slice(3)}
-        </text>
-      ))}
-    </svg>
+    <div>
+      {/* Легенда серий */}
+      <div style={{ display: "flex", gap: 18, marginBottom: 8, flexWrap: "wrap" }}>
+        {series.map((s) => (
+          <span key={s.name} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12.5, color: "var(--text-2)" }}>
+            <i style={{ width: 16, height: 3, borderRadius: 2, background: s.color, display: "inline-block" }} />
+            {s.name}
+          </span>
+        ))}
+      </div>
+
+      <svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+        {/* Сетка */}
+        {[25, 50, 75].map((lvl) => (
+          <line key={lvl} x1={0} y1={y(lvl)} x2={W} y2={y(lvl)} stroke="#C7D2E0" strokeDasharray="4 4" />
+        ))}
+
+        {series.map((s, si) => {
+          const line = s.points.map((p, i) => `${x(i)},${y(p.score)}`).join(" ");
+          // Область под линией рисуем только для первой серии (народный рейтинг)
+          const area = `${padX},${H - padBottom} ${line} ${W - padX},${H - padBottom}`;
+          return (
+            <g key={s.name}>
+              {si === 0 && (
+                <polygon
+                  points={area}
+                  fill={`${s.color}1A`}
+                  style={{ opacity: drawn ? 1 : 0, transition: "opacity 1.2s var(--ease) 0.5s" }}
+                />
+              )}
+              <polyline
+                points={line}
+                fill="none"
+                stroke={s.color}
+                strokeWidth={si === 0 ? 2.8 : 2.2}
+                strokeDasharray={si === 1 ? "7 5" : undefined}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                style={{
+                  strokeDasharray: si === 0 ? 1400 : "7 5",
+                  ...(si === 0
+                    ? {
+                        strokeDashoffset: drawn ? 0 : 1400,
+                        transition: "stroke-dashoffset 1.6s var(--ease)",
+                      }
+                    : { opacity: drawn ? 1 : 0, transition: "opacity 1s var(--ease) 0.8s" }),
+                }}
+              />
+              {/* Точки последней серии — конечные значения */}
+              <circle
+                cx={x(s.points.length - 1)}
+                cy={y(s.points[s.points.length - 1].score)}
+                r={4.5}
+                fill={s.color}
+                style={{ opacity: drawn ? 1 : 0, transition: "opacity 0.4s var(--ease) 1.4s" }}
+              />
+              {/* Интерактивные невидимые точки для ховера */}
+              {s.points.map((p, i) => (
+                <circle
+                  key={i}
+                  cx={x(i)}
+                  cy={y(p.score)}
+                  r={hover && hover.s === si && hover.i === i ? 5 : 3}
+                  fill={hover && hover.s === si && hover.i === i ? s.color : "transparent"}
+                  stroke={hover && hover.s === si && hover.i === i ? "#fff" : "none"}
+                  style={{ transition: "all 0.2s var(--ease)", cursor: "pointer" }}
+                  onMouseEnter={() => setHover({ s: si, i })}
+                  onMouseLeave={() => setHover(null)}
+                />
+              ))}
+            </g>
+          );
+        })}
+
+        {/* Подписи месяцев */}
+        {labels.map((p) => (
+          <text key={p.date} x={x(p.i)} y={H - 6} fontSize={11} fill="#64748B">
+            {p.date.slice(3)}
+          </text>
+        ))}
+      </svg>
+
+      {/* Всплывающее значение при наведении */}
+      <div style={{ minHeight: 20, fontSize: 12.5, color: "var(--text-2)", textAlign: "center" }}>
+        {hover
+          ? `${series[hover.s].name}: ${series[hover.s].points[hover.i].score} баллов · ${series[hover.s].points[hover.i].date}`
+          : "Наведите на точку, чтобы увидеть значение"}
+      </div>
+    </div>
   );
 }

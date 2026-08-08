@@ -92,7 +92,10 @@ export interface Deputy {
   promises: OfficialPromise[];
   assets: DeputyAsset[];
   parliament: ParliamentWork;
-  ratingHistory: { date: string; score: number }[];
+  /** Динамика народного рейтинга (90 дней); заполняется расчётным блоком ниже */
+  peopleHistory?: { date: string; score: number }[];
+  /** Динамика профессионального рейтинга (90 дней); заполняется расчётным блоком ниже */
+  profHistory?: { date: string; score: number }[];
 }
 
 export interface FeedEvent {

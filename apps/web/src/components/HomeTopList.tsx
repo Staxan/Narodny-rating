@@ -27,7 +27,7 @@ export default function HomeTopList({ deputies, counts }: HomeTopListProps) {
   ];
 
   return (
-    <div className="card lift anim d1">
+    <div className="card accent-teal lift anim d1">
       <div className="sec-head">
         <h2>★ Топ по народному рейтингу</h2>
         <a className="all" href="/deputies">

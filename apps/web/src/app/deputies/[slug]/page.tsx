@@ -111,8 +111,8 @@ export default async function DeputyPage({ params }: Props) {
           </div>
         )}
 
-        {/* Профессиональный рейтинг (объективные данные) */}
-        <div className="card lift anim d3 mt">
+        {/* Профессиональный рейтинг (объективные данные) — тёмный блок-«герой» */}
+        <div className="card card-dark lift anim d3 mt">
           <div className="sec-head" style={{ marginBottom: 10 }}>
             <h2 style={{ margin: 0 }}>▤ Профессиональный рейтинг</h2>
             <span style={{ fontWeight: 500, fontSize: 13, color: "var(--text-2)", marginLeft: "auto" }}>
@@ -143,7 +143,7 @@ export default async function DeputyPage({ params }: Props) {
                   }}
                 />
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, color: "var(--text-2)", marginTop: 4 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11.5, color: "#94A3B8", marginTop: 4 }}>
                 <span>0</span>
                 <span>из 100 · взвешено по 6 блокам</span>
                 <span>100</span>
@@ -151,14 +151,14 @@ export default async function DeputyPage({ params }: Props) {
             </div>
           </div>
 
-          <div style={{ fontSize: 13, color: "var(--text-2)", marginBottom: 8 }}>Расшифровка по блокам:</div>
+          <div style={{ fontSize: 13, color: "#94A3B8", marginBottom: 8 }}>Расшифровка по блокам:</div>
           <RatingBars blocks={d.ratingBlocks} />
         </div>
 
         <div className="grid2">
           {/* Левая колонка */}
           <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-            <div className="card lift anim d3">
+            <div className="card accent-blue lift anim d3">
               <h2>☑ Реестр обещаний</h2>
               <div className="counters">
                 <span className="cnt d">Выполнено: {done}</span>
@@ -193,7 +193,7 @@ export default async function DeputyPage({ params }: Props) {
               </table>
             </div>
 
-            <div className="card lift anim d4">
+            <div className="card accent-navy lift anim d4">
               <h2>⚖ Работа в парламенте</h2>
               <div className="law-stats">
                 <div className="ls">
@@ -224,16 +224,21 @@ export default async function DeputyPage({ params }: Props) {
               })}
             </div>
 
-            <div className="card lift anim d5">
-              <h2>↗ Динамика рейтинга (90 дней)</h2>
-              <div className="chart-note">Итоговый балл по мере поступления данных и голосов граждан</div>
-              <RatingChart points={d.ratingHistory} />
+            <div className="card accent-teal lift anim d5">
+              <h2>↗ Динамика рейтингов (90 дней)</h2>
+              <div className="chart-note">Сравнение двух рейтингов во времени — расхождение сразу видно</div>
+              <RatingChart
+                series={[
+                  { name: "Народный рейтинг", color: "#0D9488", points: d.peopleHistory ?? [] },
+                  { name: "Профессиональный рейтинг", color: "#1E293B", points: d.profHistory ?? [] },
+                ]}
+              />
             </div>
           </div>
 
           {/* Правая колонка */}
           <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-            <div className="card lift anim d3">
+            <div className="card accent-amber lift anim d3">
               <h2>₽ Доходы и имущество</h2>
               <div className="kv">
                 <span className="k">Официальный доход ({d.incomeYear})</span>
@@ -261,7 +266,7 @@ export default async function DeputyPage({ params }: Props) {
               ))}
             </div>
 
-            <div className="card lift anim d4">
+            <div className="card accent-teal lift anim d4">
               <h2>👥 Народный рейтинг — голоса граждан</h2>
               <div style={{ marginBottom: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14.5, marginBottom: 6 }}>

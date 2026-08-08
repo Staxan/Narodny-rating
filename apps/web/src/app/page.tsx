@@ -57,7 +57,7 @@ export default function HomePage() {
           <HomeTopList deputies={DEPUTIES} counts={counts} />
 
           <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
-            <div className="card lift anim d2">
+            <div className="card accent-blue lift anim d2">
               <div className="sec-head">
                 <h2>⟳ Последние изменения</h2>
               </div>

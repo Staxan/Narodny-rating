@@ -11,11 +11,11 @@
   --accent: #0D9488;
   --accent-2: #14B8A6;
   --accent-dark: #0F766E;
-  --bg: #F4F7FB;
+  --bg: #E9EEF5;
   --surface: #FFFFFF;
   --text: #0F172A;
   --text-2: #64748B;
-  --border: #D7DFEA;
+  --border: #C7D2E0;
 
   /* Семантические цвета рейтинга */
   --good: #10B981;
@@ -24,9 +24,9 @@
   --alert: #F97316;
   --info: #3B82F6;
 
-  /* Тени: более выраженные, чтобы блоки визуально «отделялись» от фона */
-  --sh-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.10);
-  --sh-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 24px 48px rgba(15, 23, 42, 0.16);
+  /* Тени: выраженные, чтобы карточки явно отделялись от фона */
+  --sh-sm: 0 1px 3px rgba(15, 23, 42, 0.08), 0 10px 28px rgba(15, 23, 42, 0.12);
+  --sh-md: 0 6px 16px rgba(15, 23, 42, 0.10), 0 28px 56px rgba(15, 23, 42, 0.18);
   --sh-accent: 0 4px 14px rgba(13, 148, 136, 0.35);
   --sh-accent-lg: 0 9px 24px rgba(13, 148, 136, 0.45);
 
@@ -403,7 +403,7 @@ a {
 
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius);
   padding: 24px 26px;
   box-shadow: var(--sh-sm);
@@ -411,6 +411,30 @@ a {
 }
 
 .card.lift:hover { box-shadow: var(--sh-md); transform: translateY(-2px); }
+
+/* Акцентная полоска слева у ключевых блоков — различение «взглядом» */
+.card.accent-teal   { border-left: 4px solid var(--accent); }
+.card.accent-navy   { border-left: 4px solid var(--primary-2); }
+.card.accent-blue   { border-left: 4px solid var(--info); }
+.card.accent-amber  { border-left: 4px solid var(--mid); }
+.card.accent-red    { border-left: 4px solid var(--bad); }
+
+/* Тёмная карточка — для профессионального рейтинга («герой» страницы) */
+.card.card-dark {
+  background:
+    radial-gradient(700px 280px at 105% -30%, rgba(20, 184, 166, 0.14), transparent 60%),
+    linear-gradient(150deg, #0F172A 0%, #1B2A47 100%);
+  border: 1.5px solid #24334F;
+  color: #fff;
+}
+
+.card.card-dark h2 { color: #fff; }
+.card.card-dark .blk { border-bottom-color: rgba(255, 255, 255, 0.10); }
+.card.card-dark .blk:hover { background: rgba(255, 255, 255, 0.05); }
+.card.card-dark .blk-name { color: #E2E8F0; }
+.card.card-dark .blk-name .w { color: #94A3B8; }
+.card.card-dark .bar { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.14); }
+.card.card-dark .nodata { color: #94A3B8; }
 .card h2 {
   font-size: 18px;
   font-weight: 750;
@@ -910,16 +934,16 @@ tr:last-child td { border-bottom: none; }
 
 footer.site {
   margin-top: 64px;
-  padding: 32px 0 40px;
-  background: var(--surface);
-  border-top: 2px solid var(--border);
-  box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.06);
-  color: var(--text-2);
+  padding: 36px 0 44px;
+  /* Тёмный подвал в тон шапке — абсолютное разделение со страницей */
+  background: linear-gradient(150deg, #0F172A 0%, #16213A 100%);
+  border-top: 3px solid var(--accent);
+  color: #94A3B8;
   font-size: 13px;
 }
 
-footer.site a { color: var(--text-2); text-decoration: none; transition: color 0.2s var(--ease); }
-footer.site a:hover { color: var(--accent); }
+footer.site a { color: #CBD5E1; text-decoration: none; transition: color 0.2s var(--ease); }
+footer.site a:hover { color: #5EEAD4; }
 
 /* ---------- Модальные окна ---------- */
 

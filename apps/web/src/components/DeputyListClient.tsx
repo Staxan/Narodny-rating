@@ -102,7 +102,7 @@ export default function DeputyListClient({ deputies, initial = {} }: DeputyListC
         <b>Депутаты</b> · найдено: {list.length}
       </div>
 
-      <div className="card anim d2 mt" style={{ marginTop: 12 }}>
+      <div className="card accent-teal anim d2 mt" style={{ marginTop: 12 }}>
         {/* Поиск */}
         <div className="search-box" style={{ boxShadow: "none", border: "1px solid var(--border)", marginBottom: 14 }}>
           <span className="ic">⌕</span>

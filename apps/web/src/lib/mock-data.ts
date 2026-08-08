@@ -97,7 +97,6 @@ export const DEPUTIES: Deputy[] = [
         { law: "О регулировании дистанционной занятости", date: "17.06.2025", position: "absent" },
       ],
     },
-    ratingHistory: history(52, +3),
   },
   {
     id: "d-sokolova",
@@ -143,7 +142,6 @@ export const DEPUTIES: Deputy[] = [
         { law: "О повышении тарифов на вывоз мусора", date: "11.03.2025", position: "nay" },
       ],
     },
-    ratingHistory: history(82, +5),
   },
   {
     id: "d-kovalev",
@@ -187,7 +185,6 @@ export const DEPUTIES: Deputy[] = [
         { law: "О льготах на проезд пенсионерам", date: "14.11.2024", position: "yea" },
       ],
     },
-    ratingHistory: history(73, +3),
   },
   {
     id: "d-ivanov",
@@ -233,7 +230,6 @@ export const DEPUTIES: Deputy[] = [
         { law: "О реновации квартала 14-Б", date: "30.10.2025", position: "yea" },
       ],
     },
-    ratingHistory: history(60, +2),
   },
   {
     id: "d-gusev",
@@ -277,7 +273,6 @@ export const DEPUTIES: Deputy[] = [
         { law: "О повышении тарифов ЖКХ", date: "12.02.2025", position: "yea" },
       ],
     },
-    ratingHistory: history(33, -4),
   },
   {
     id: "d-petrova",
@@ -323,7 +318,6 @@ export const DEPUTIES: Deputy[] = [
         { law: "Об основах государственной политики в сфере образования", date: "02.07.2025", position: "yea" },
       ],
     },
-    ratingHistory: history(71, +4),
   },
   {
     id: "d-volkov",
@@ -367,7 +361,6 @@ export const DEPUTIES: Deputy[] = [
         { law: "О налоговых льготах для МСП", date: "19.06.2025", position: "yea" },
       ],
     },
-    ratingHistory: history(46, +1),
   },
   {
     id: "d-nikitina",
@@ -410,14 +403,16 @@ export const DEPUTIES: Deputy[] = [
         { law: "О социальных выплатах многодетным", date: "25.09.2025", position: "yea" },
       ],
     },
-    ratingHistory: history(74, +4),
   },
 ];
 
-// Итоговые баллы считаются по формулам — единый источник истины
+// Итоговые баллы считаются по формулам — единый источник истины.
+// Динамика обоих рейтингов генерируется вокруг итоговых баллов.
 DEPUTIES.forEach((d) => {
   d.professionalScore = computeProfessional(d.ratingBlocks);
   d.peopleScore = peopleScore(d.people);
+  d.profHistory = history(d.professionalScore, +3);
+  d.peopleHistory = history(d.peopleScore, +5);
 });
 
 /** Лента последних изменений для главной страницы */
