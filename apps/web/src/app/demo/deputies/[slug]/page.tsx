@@ -8,6 +8,7 @@ import RatingChart from "@/components/RatingChart";
 import Avatar from "@/components/Avatar";
 import VoteModal from "@/components/VoteModal";
 import { getDeputyBySlug } from "@/lib/mock-data";
+import { DEPUTIES } from "@/lib/mock-data";
 import { LEVEL_NAMES, totalVotes, hasDivergence, scoreCssColor } from "@/lib/types";
 
 /** Локализованные названия статусов обещаний */
@@ -43,6 +44,11 @@ function stars(score: number): string {
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+/** Генерирует карточки всех демонстрационных депутатов при сборке Pages. */
+export function generateStaticParams() {
+  return DEPUTIES.map((deputy) => ({ slug: deputy.slug }));
 }
 
 /** Карточка депутата — главный экран системы (ТЗ 1.1, раздел 5.3). */
