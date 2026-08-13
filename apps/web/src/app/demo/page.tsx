@@ -5,6 +5,7 @@ import HomeTopList from "@/components/HomeTopList";
 import HeroFilters from "@/components/HeroFilters";
 import ParticipantCategories from "@/components/ParticipantCategories";
 import DataPipelineCard from "@/components/DataPipelineCard";
+import { ParticipantCardMeta, ParticipantCommunitySection } from "@/components/ExpandedPresentation";
 import { DEPUTIES, FEED_EVENTS, OVERVIEW_STATS, getLevelCounts } from "@/lib/mock-data";
 import Link from "next/link";
 
@@ -38,8 +39,10 @@ export default function HomePage() {
         {/* Баннер выборов */}
         <ElectionBanner />
 
-        {/* Категории участников — единая модель для расширения проекта */}
+        {/* Универсальная модель участника и демонстрационный контур профиля */}
         <ParticipantCategories />
+        <ParticipantCardMeta />
+        <ParticipantCommunitySection />
 
         {/* Контур подготовки данных */}
         <DataPipelineCard />
