@@ -1,8 +1,6 @@
 import Link from "next/link";
 import ExpandedPresentation from "@/components/ExpandedPresentation";
 import blocks from "@/content/expanded-presentation.json";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import SiteFooter from "@/components/SiteFooter";
 
 export const metadata = {
@@ -11,7 +9,6 @@ export const metadata = {
 };
 
 export default function ExpandedPresentationPage() {
-  const presentationText = readFileSync(join(process.cwd(), "src/content/about-project.md"), "utf8");
   return (
     <div className="presentation-page expanded-page">
       <header className="presentation-nav">
@@ -25,11 +22,6 @@ export default function ExpandedPresentationPage() {
           <p>Материалы собраны из рабочих документов проекта и представлены в пяти смысловых блоках.</p>
         </div>
         <ExpandedPresentation blocks={blocks} />
-        <section className="project-about-section wrap">
-          <div className="section-kicker">О проекте · FLMD</div>
-          <h2>Текст из Markdown-документа</h2>
-          <div className="card project-about-card"><div className="presentation-markdown">{presentationText}</div></div>
-        </section>
       </main>
       <SiteFooter />
     </div>
