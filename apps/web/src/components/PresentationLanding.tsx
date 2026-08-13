@@ -55,6 +55,11 @@ export default function PresentationLanding({ aboutText }: PresentationLandingPr
     setError("");
   }
 
+  const aboutBlocks = aboutText.split(/\n\s*\n/).map((block) => block.trim()).filter(Boolean);
+  const aboutTitle = aboutBlocks[0]?.replace(/^#+\s*/, "") ?? "О проекте";
+  const aboutLead = aboutBlocks[1] ?? "";
+  const aboutBody = aboutBlocks.slice(2);
+
   if (!authorized) {
     return (
       <main className="access-screen">
@@ -99,7 +104,7 @@ export default function PresentationLanding({ aboutText }: PresentationLandingPr
           </div>
         </section>
 
-        <section id="about" className="presentation-section wrap"><div className="section-kicker">01 · О проекте</div><div className="section-heading"><h2>Система, которая помогает<br /><em>разобраться в фактах</em></h2><div className="presentation-markdown about-project-text">{aboutText.split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph.replace(/^#+\s*/, "")}</p>)}</div></div><div className="feature-grid"><article><span>01</span><h3>Проверяемые факты</h3><p>Обещания, результаты, доходы и имущество — с указанием источников и историей изменений.</p></article><article><span>02</span><h3>Голос граждан</h3><p>Простая оценка «за», «против» или «воздержался» с подтверждением через Telegram.</p></article><article><span>03</span><h3>Прозрачные правила</h3><p>Профессиональная и народная оценки разделены, а методика доступна для проверки.</p></article></div></section>
+        <section id="about" className="presentation-section about-section"><div className="wrap"><div className="about-heading"><div><div className="section-kicker">01 · О проекте</div><h2>{aboutTitle}</h2></div><p className="about-lead">{aboutLead}</p></div><div className="about-content"><div className="about-mark"><span>НР</span><i /></div><div className="presentation-markdown about-project-text">{aboutBody.map((paragraph, index) => <p key={index}>{paragraph.replace(/^#+\s*/, "")}</p>)}</div></div><div className="feature-grid"><article><span>01</span><h3>Проверяемые факты</h3><p>Обещания, результаты, доходы и имущество — с указанием источников и историей изменений.</p></article><article><span>02</span><h3>Голос граждан</h3><p>Простая оценка «за», «против» или «воздержался» с подтверждением через Telegram.</p></article><article><span>03</span><h3>Прозрачные правила</h3><p>Профессиональная и народная оценки разделены, а методика доступна для проверки.</p></article></div></div></section>
 
         <section id="principles" className="dark-section"><div className="wrap"><div className="section-kicker">02 · Принципы</div><div className="section-heading light"><h2>Независимая система<br /><em>для обычных людей</em></h2><p>Проект строится как распределённая и максимально независимая инфраструктура. Его устойчивость не должна зависеть от одного сервера, владельца или поставщика.</p></div><div className="principle-grid"><div><b>◈</b><h3>Децентрализация</h3><p>Резервирование данных, доменов и инфраструктуры снижает зависимость от одной точки отказа.</p></div><div><b>↗</b><h3>Открытое развитие</h3><p>Люди могут поддерживать проект ресурсами, хостингом, доменами и собственными инициативами.</p></div><div><b>◎</b><h3>Технологии во благо</h3><p>Автоматизация и агенты помогают поддерживать сервис, а правила работы остаются понятными и проверяемыми.</p></div></div></div></section>
 
