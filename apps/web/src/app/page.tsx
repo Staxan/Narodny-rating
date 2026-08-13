@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import PresentationLanding from "@/components/PresentationLanding";
 
 export const metadata = {
@@ -6,7 +8,8 @@ export const metadata = {
 };
 
 export default function HomePage() {
-  return <PresentationLanding />;
+  const aboutText = readFileSync(join(process.cwd(), "src/content/about-project.md"), "utf8");
+  return <PresentationLanding aboutText={aboutText} />;
 }
 
 // Основной портал доступен в разделе /demo.
