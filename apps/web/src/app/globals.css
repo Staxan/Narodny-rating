@@ -419,6 +419,34 @@ a {
 .card.accent-amber  { border-left: 4px solid var(--mid); }
 .card.accent-red    { border-left: 4px solid var(--bad); }
 
+/* ---------- Категории участников и контур данных ---------- */
+.participant-categories, .data-pipeline { margin-top: 24px; }
+.participant-categories .section-kicker, .data-pipeline .section-kicker { display: block; margin-bottom: 5px; }
+.section-hint { color: var(--text-2); font-size: 13px; }
+.categories-intro, .pipeline-lead { color: var(--text-2); margin: 2px 0 20px; max-width: 760px; }
+.category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.category-card { display: flex; flex-direction: column; gap: 12px; min-height: 160px; padding: 17px; border: 1px solid var(--border); border-radius: 13px; background: #F8FAFC; text-decoration: none; transition: transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease); }
+.category-card:hover { transform: translateY(-3px); box-shadow: var(--sh-sm); border-color: var(--accent-2); }
+.category-card.selected { background: linear-gradient(145deg, #ECFEFF, #F8FAFC); border-color: #5EEAD4; box-shadow: 0 0 0 2px rgba(20,184,166,.12); }
+.category-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; color: var(--accent-dark); background: #CCFBF1; font-size: 18px; font-weight: 800; }
+.category-card span:nth-child(2) { display: flex; flex-direction: column; gap: 4px; }
+.category-card strong { font-size: 15px; }
+.category-card small { color: var(--text-2); font-size: 12px; line-height: 1.4; }
+.category-card > b { margin-top: auto; color: var(--accent-dark); font-size: 12px; }
+.data-pipeline { padding: 26px; overflow: hidden; }
+.pipeline-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; }
+.pipeline-heading h2 { max-width: 610px; line-height: 1.2; }
+.pipeline-status { white-space: nowrap; color: #99F6E4; font-size: 12px; border: 1px solid rgba(94,234,212,.25); border-radius: 20px; padding: 7px 11px; }
+.pipeline-status i { display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: #34D399; box-shadow: 0 0 0 4px rgba(52,211,153,.12); }
+.data-pipeline .pipeline-lead { color: #94A3B8; }
+.pipeline-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.pipeline-step { position: relative; display: flex; gap: 11px; padding: 15px 12px; border: 1px solid rgba(148,163,184,.18); border-radius: 12px; background: rgba(255,255,255,.045); }
+.pipeline-step > span { color: #5EEAD4; font-size: 12px; font-weight: 800; }
+.pipeline-step strong, .pipeline-step small { display: block; }
+.pipeline-step strong { color: #F8FAFC; font-size: 14px; }
+.pipeline-step small { margin-top: 5px; color: #94A3B8; font-size: 11.5px; line-height: 1.4; }
+.pipeline-arrow { position: absolute; right: -18px; top: 38%; z-index: 1; color: #5EEAD4; }
+
 /* Тёмная карточка — для профессионального рейтинга («герой» страницы) */
 .card.card-dark {
   background:
@@ -1000,9 +1028,17 @@ footer.site a:hover { color: #5EEAD4; }
 
 /* ---------- Адаптив (mobile-first доработки) ---------- */
 
+@media (max-width: 560px) {
+  .category-grid, .pipeline-steps { grid-template-columns: 1fr; }
+  .pipeline-heading { flex-direction: column; }
+  .data-pipeline { padding: 20px; }
+}
+
 @media (max-width: 900px) {
   .main-grid, .grid2 { grid-template-columns: 1fr; }
   .stats { grid-template-columns: 1fr; }
+  .category-grid, .pipeline-steps { grid-template-columns: repeat(2, 1fr); }
+  .pipeline-arrow { display: none; }
   .hero h1 { font-size: 30px; }
   .profile { flex-direction: column; }
   .p-score { width: 100%; }

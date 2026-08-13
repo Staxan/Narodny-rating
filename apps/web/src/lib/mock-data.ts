@@ -48,6 +48,8 @@ function history(base: number, trend = 0): { date: string; score: number }[] {
 
 export const DEPUTIES: Deputy[] = [
   {
+    category: "deputy",
+
     id: "d-romanova",
     slug: "romanova-anna",
     fullName: "Романова Анна Викторовна",

@@ -1,8 +1,26 @@
 // Типы данных проекта «Народный рейтинг» (Этап 1 — мок-данные)
 // Позже будут заменены на ответы API без изменения компонентов.
 
-/** Уровень власти депутата */
+/** Уровень полномочий участника рейтинга. */
 export type DeputyLevel = "federal" | "regional" | "municipal";
+
+/** Универсальная категория участника платформы. */
+export type ParticipantCategory = "deputy" | "official" | "institution" | "initiative";
+
+/** Универсальная модель участника: текущий этап использует её для депутатов. */
+export type Participant = {
+  id: string;
+  category: ParticipantCategory;
+  fullName: string;
+  position: string;
+};
+
+export const PARTICIPANT_CATEGORY_NAMES: Record<ParticipantCategory, string> = {
+  deputy: "Депутаты",
+  official: "Чиновники",
+  institution: "Органы и учреждения",
+  initiative: "Общественные инициативы",
+};
 
 /** Статус обещания */
 export type PromiseStatus = "pending" | "in_progress" | "partial" | "fulfilled" | "failed";
@@ -62,6 +80,8 @@ export interface ParliamentWork {
 
 export interface Deputy {
   id: string;
+  /** Категория участника; пока все демонстрационные записи — депутаты. */
+  category?: ParticipantCategory;
   slug: string;
   fullName: string;
   initials: string;
