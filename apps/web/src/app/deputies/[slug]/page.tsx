@@ -7,6 +7,7 @@ import RatingBars from "@/components/RatingBars";
 import RatingChart from "@/components/RatingChart";
 import Avatar from "@/components/Avatar";
 import VoteModal from "@/components/VoteModal";
+import ParticipantCommunityPanel from "@/components/ParticipantCommunityPanel";
 import { getDeputyBySlug } from "@/lib/mock-data";
 import { DEPUTIES } from "@/lib/mock-data";
 import { LEVEL_NAMES, totalVotes, hasDivergence, scoreCssColor } from "@/lib/types";
@@ -301,6 +302,8 @@ export default async function DeputyPage({ params }: Props) {
             </div>
           </div>
         </div>
+
+        <ParticipantCommunityPanel participantName={d.fullName} />
 
         <div className="disclaimer anim d5">
           ⚠ Данные собраны из открытых источников. Обнаруженные несоответствия не являются
