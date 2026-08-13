@@ -28,9 +28,9 @@ export default function DemoNotice() {
       <div className="demo-notice-card">
         <span className="unlock-badge">✦ Новый уровень доступен</span>
         <h2 id="demo-notice-title">Вам доступна полная презентация</h2>
-        <p>Вы уже познакомились с демонстрационным порталом. Вернитесь на лендинг, чтобы открыть расширенную концепцию проекта.</p>
+        <p>Вы уже познакомились с демонстрационным порталом.</p>
         <div className="demo-notice-actions">
-          <Link className="btn btn-lg" href="/#full-presentation">Открыть презентацию <span>→</span></Link>
+          <Link className="btn btn-lg" href="/presentation/expanded">Открыть презентацию <span>→</span></Link>
           <button className="btn btn-ghost" onClick={() => setOpen(false)}>Продолжить просмотр</button>
         </div>
       </div>

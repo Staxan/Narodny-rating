@@ -37,7 +37,7 @@ export default function ExpandedPresentation({ blocks }: { blocks: PresentationB
   return (
     <section className="expanded-presentation" aria-label="Расширенная презентация">
       <div className="expanded-sidebar">
-        <span className="section-kicker">03 · Расширенная концепция</span>
+        <span className="section-kicker">Расширенная презентация</span>
         <h2>Пять блоков<br /><em>одной системы</em></h2>
         <p>Выбери направление, чтобы открыть его материалы.</p>
         <div className="expanded-tabs">
